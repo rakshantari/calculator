@@ -1,0 +1,129 @@
+[11/01, 9:59 pm] VICKY (C. S): package com.info.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.info.model.student;
+import com.info.service.studentservices;
+
+import java.awt.*;
+
+@RestController
+@RequestMapping("/test")
+public class mycontroller {
+    @Autowired
+    private studentservices stdservice;
+
+    @GetMapping
+    public java.util.List<student> getstudent(){
+        return stdservice.getstudent();
+    }
+
+    @PostMapping
+    public student addstudent (@RequestBody student student){
+        return stdservice.addStudent(student);
+    }
+
+    @PostMapping
+    public student updatestudent (@RequestBody student student){
+        return stdservice.updateStudent(student);
+}
+//    @DeleteMapping("{id}")
+//    public String deletestudent(@PathVariable int id){
+//    	return stdservice.deletStudent(id);
+//    	
+//	}
+}
+[11/01, 9:59 pm] VICKY (C. S): package com.info.model;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "studentdemo")
+public class student {
+
+    @Id
+    private int id;
+    private String name;
+    private String city;
+    
+	public student(int id, String name, String city) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.city = city;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+   
+}
+[11/01, 10:00 pm] VICKY (C. S): package com.info.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.info.model.student;
+
+
+public interface studentrepository extends MongoRepository<student, Integer>{
+}
+[11/01, 10:00 pm] VICKY (C. S): package com.info.service;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.info.model.student;
+import com.info.repository.studentrepository;
+
+import java.awt.*;
+
+@Service
+public class studentservices {
+
+    @Autowired
+    private studentrepository stdrepository;
+
+    public student addStudent(student std) {
+        return stdrepository.save(std);
+    }
+    public java.util.List<student> getstudent(){
+        return stdrepository.findAll();
+    }
+
+    public student updateStudent(student student){
+        student std = stdrepository.findById(student.getId()).get();
+        std.setId(student.getId());
+        std.setName(student.getName());
+        std.setCity(student.getCity());
+        return stdrepository.save(std);
+    }
+
+    public String deletStudent(int id) {
+    	stdrepository.deleteById(id);
+        return "student has been deleted";
+    }
+
+    }
